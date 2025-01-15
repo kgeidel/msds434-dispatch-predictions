@@ -21,8 +21,8 @@ March 16, 2025
 ## Overview
 
 - I am in section 55 (Winter '25.) This is my term project. <br>
-- [Step 1: Identify the problem](#identify-the-problem)
-- [Step 2: Identify the data set](#identify-the-data-set)
+- [Step 1: Identify the problem](#the-problem)
+- [Step 2: Identify the data set](#the-data-set)
 - Step 3: Construct a functional specification
 
 ## The problem
