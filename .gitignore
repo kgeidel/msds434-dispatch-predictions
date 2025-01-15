@@ -157,5 +157,5 @@ Assignment*.zip
 *.bkb
 *password*
 *.bak
-
+.~*
 
