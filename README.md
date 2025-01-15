@@ -63,19 +63,6 @@ df = pd.read_excel(file_path, parse_dates=[['Date', 'Alarm']])
 df.head()  # Raw data frame
 ```
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -155,6 +142,7 @@ df.head()  # Raw data frame
   </tbody>
 </table>
 </div>
+
 ```python
 # stats on the raw dataframe
 df.info()
@@ -268,19 +256,6 @@ plt.show()
 calls_per_week.describe()
 ```
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
