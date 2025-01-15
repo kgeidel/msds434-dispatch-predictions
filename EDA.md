@@ -1,48 +1,3 @@
-# MSDS 434 Dispatch Predictions
-
-<div align=center>
-
-DISPATCH PREDICTIONS: <br>MACHINE LEARNING ON EMERGENCY SERVICE CALL VOLUME  
-</div>
-<br><br>
-
-<div align=center>
-
-Kevin Geidel <br>
-MSDS 434: Data Science & Cloud Computing<br>
-Northwestern University<br>
-March 16, 2025
-<br>
-</div>
-<br>
-</p>
-<hr>
-
-## Overview
-
-- I am in section 55 (Winter '25.) This is my term project. <br>
-- [Step 1: Identify the problem](#identify-the-problem)
-- [Step 2: Identify the data set](#identify-the-data-set)
-- Step 3: Construct a functional specification
-
-## Identify the problem
-
-Low staffing in emergency services is problematic for many organizations; particularly volunteer fire departments. The issue is compounded during high call volume times (i.e. Winter store events.) There are a number of strategies for alleviating the complications surrounding personnel shortages such as duty crews. In paid departments there is also callbacks and overtime. The decision to use these tactics is largely informed by experience (and external information such as weather forecasts.)
-
-**dispatch-predictions** aims to use **Machine Learning (ML)** to model the demand for fire & rescue services (calls/incidents) and use the model to predict future call volume. Specifically:
-
-* When is the next call likely to occur?
-* How many calls are expected in the next 1 hour? 24 hours? 48 hours? week?, etc.
-* What factors influence the likely probability of a call occurring?
-* Would the ML model be more reliable if fed raw time-series data? or a pre formulated decision analytics problem (i.e a 'Queue problem') and the ML used to solve?
-
-## Identify the data set
-
-* Data consists of incident call log from [Hughsonville Fire Department](www.hfd45.org)
-* Current state of the data is an xls export (1998-01-02 to 2025-01-14)
-* Working on programmatic access to the Microsoft SQL Server that hosts it
-* Remainder of initial analysis performed in the form of *Exploratory Data Analysis (EDA)*:
-
 ```python
 # MSDS 434 - Section 55
 # Winter '25
@@ -54,6 +9,8 @@ from matplotlib import pyplot as plt
 import pandas as pd
 pd.set_option('display.max_rows', 500)
 ```
+
+
 ```python
 file_path = 'data/2025_01_14_hfd_incident_log.xls'
 
@@ -61,6 +18,10 @@ df = pd.read_excel(file_path, parse_dates=[['Date', 'Alarm']])
 
 df.head()  # Raw data frame
 ```
+
+
+
+
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -154,6 +115,10 @@ df.head()  # Raw data frame
   </tbody>
 </table>
 </div>
+
+
+
+
 ```python
 # stats on the raw dataframe
 df.info()
@@ -175,6 +140,9 @@ df.info()
      8   Lgth        15483 non-null  float64
     dtypes: float64(2), object(7)
     memory usage: 1.1+ MB
+
+
+
 ```python
 # 689 records (16172 - 15483) don't have dates, incident #s or times.
 # This looks like a issue with exporting certain call types 
@@ -224,10 +192,16 @@ calls_per_day.plot.line()
 plt.title("Calls per day")
 plt.ylabel("Number of incidents")
 plt.show()
-```    
+```
+
+
+    
 ![png](EDA_files/EDA_4_0.png)
+    
+
+
+
 ```python
-# Some descriptive statistics for daily call distribution
 calls_per_day.describe()
 ```
 
@@ -243,14 +217,25 @@ calls_per_day.describe()
     75%         3.000000
     max        47.000000
     Name: Date_Alarm, dtype: float64
+
+
+
+
 ```python
 # view the distribution of calls per day
 
 plt.boxplot(calls_per_day, orientation='horizontal');
 plt.title("Distribution of daily calls")
 plt.yticks([]);
-``` 
+```
+
+
+    
 ![png](EDA_files/EDA_6_0.png)
+    
+
+
+
 ```python
 # Try again by week
 
@@ -261,11 +246,21 @@ plt.title("Calls per week")
 plt.ylabel("Number of incidents")
 plt.show()
 ```
+
+
+    
 ![png](EDA_files/EDA_7_0.png)
+    
+
+
+
 ```python
-# Some descriptive statistics for weekly call distribution
 calls_per_week.describe()
 ```
+
+
+
+
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -324,12 +319,17 @@ calls_per_week.describe()
 </table>
 </div>
 
+
+
+
 ```python
 plt.boxplot(calls_per_week, orientation='horizontal');
 plt.title("Distribution of weekly calls")
 plt.yticks([]);
 ```
-![png](EDA_files/EDA_9_0.png)
 
-<hr>
+
+    
+![png](EDA_files/EDA_9_0.png)
+    
 
