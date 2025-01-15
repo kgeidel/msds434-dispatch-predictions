@@ -25,22 +25,23 @@ March 16, 2025
 - [Step 2: Identify the data set](#identify-the-data-set)
 - Step 3: Construct a functional specification
 
-## Identify the problem
+## The problem
 
-Low staffing in emergency services is problematic for many organizations; particularly volunteer fire departments. The issue is compounded during high call volume times (i.e. Winter store events.) There are a number of strategies for alleviating the complications surrounding personnel shortages such as duty crews. In paid departments there is also callbacks and overtime. The decision to use these tactics is largely informed by experience (and external information such as weather forecasts.)
+Low staffing in emergency services is problematic for many organizations; particularly volunteer fire departments. The issue is compounded during high call volume times (i.e. Winter storm events.) There are a number of strategies for alleviating the complications surrounding personnel shortages including duty crews and/or key members [i.e. chauffeurs] taking fly cars home with them. In paid departments there are also callbacks and overtime. The decision to deploy such tactics is largely informed by experience (and external information such as weather forecasts.)
 
-**dispatch-predictions** aims to use **Machine Learning (ML)** to model the demand for fire & rescue services (calls/incidents) and use the model to predict future call volume. Specifically:
+**dispatch-predictions** aims to use *Machine Learning (ML)* to model the demand for fire & rescue services (calls/incidents) and use the model to predict future call volume. Specifically:
 
 * When is the next call likely to occur?
 * How many calls are expected in the next 1 hour? 24 hours? 48 hours? week?, etc.
 * What factors influence the likely probability of a call occurring?
-* Would the ML model be more reliable if fed raw time-series data? or a pre formulated decision analytics problem (i.e a 'Queue problem') and the ML used to solve?
+* Would the ML model be more reliable if fed raw time-series historical data or if it is used to solve a preformulated decision analytics problem (i.e a Queue problem?)
+* What ML algorithms are best suited for this task?
 
-## Identify the data set
+## The data set
 
-* Data consists of incident call log from [Hughsonville Fire Department](www.hfd45.org)
-* Current state of the data is an xls export (1998-01-02 to 2025-01-14)
-* Working on programmatic access to the Microsoft SQL Server that hosts it
+* Data consists of incident call logs from the [Hughsonville Fire Department](https://www.hfd45.org).
+* Current state of the data is an xls export (1998-01-02 to 2025-01-14.)
+* I am working on programmatic access to the Microsoft SQL Server that hosts it.
 * Remainder of initial analysis performed in the form of *Exploratory Data Analysis (EDA)*:
 
 ```python
@@ -333,3 +334,6 @@ plt.yticks([]);
 
 <hr>
 
+## Functional specification
+
+...
