@@ -313,7 +313,7 @@ plt.yticks([]);
 
 #### User roles & capabilities
 
-  &nbsp;&nbsp;&nbsp;&nbsp;There is one class of users: firematic officers. They will have access to the forecasts and descriptive metrics and status of the model (i.e. feature importance, last update, number of records, etc.)
+  &nbsp;&nbsp;&nbsp;&nbsp;There is one class of users: firematic officers. They will have access to the forecasts, descriptive metrics and status of the model (i.e. feature importance, last update, number of records, etc.)
 
 #### Core functionality
 
