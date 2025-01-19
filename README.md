@@ -23,7 +23,7 @@ March 16, 2025
 - I am in section 55 (Winter '25.) This is my term project. <br>
 - [Step 1: Identify the problem](#the-problem)
 - [Step 2: Identify the data set](#the-data-set)
-- Step 3: Construct a functional specification
+- [Step 3: Construct a functional specification](#functional-specification)
 
 ## The problem
 
@@ -214,15 +214,11 @@ plt.title("Calls per day")
 plt.ylabel("Number of incidents")
 plt.show()
 ```    
-![png](EDA_files/EDA_4_0.png)
+![png](docs/imgs/EDA_4_0.png)
 ```python
 # Some descriptive statistics for daily call distribution
 calls_per_day.describe()
 ```
-
-
-
-
     count    7471.000000
     mean        2.072413
     std         1.393897
@@ -239,7 +235,7 @@ plt.boxplot(calls_per_day, orientation='horizontal');
 plt.title("Distribution of daily calls")
 plt.yticks([]);
 ``` 
-![png](EDA_files/EDA_6_0.png)
+![png](docs/imgs/EDA_6_0.png)
 ```python
 # Try again by week
 
@@ -250,7 +246,7 @@ plt.title("Calls per week")
 plt.ylabel("Number of incidents")
 plt.show()
 ```
-![png](EDA_files/EDA_7_0.png)
+![png](docs/imgs/EDA_7_0.png)
 ```python
 # Some descriptive statistics for weekly call distribution
 calls_per_week.describe()
@@ -305,10 +301,82 @@ plt.boxplot(calls_per_week, orientation='horizontal');
 plt.title("Distribution of weekly calls")
 plt.yticks([]);
 ```
-![png](EDA_files/EDA_9_0.png)
+![png](docs/imgs/EDA_9_0.png)
 
 <hr>
 
 ## Functional specification
 
-...
+#### Project overview
+
+  &nbsp;&nbsp;&nbsp;&nbsp;**dispatch-predictions** aims to forecast the occurrence of emergency incidents for a volunteer fire department. The primary objective is to let Chief officers and line officers respond proactively to upcoming high call volume times.
+
+#### User roles & capabilities
+
+  &nbsp;&nbsp;&nbsp;&nbsp;There is one class of users: firematic officers. They will have access to the forecasts and descriptive metrics and status of the model (i.e. feature importance, last update, number of records, etc.)
+
+#### Core functionality
+
+  &nbsp;&nbsp;&nbsp;&nbsp;**Data collation** will occur via GoLang pipelines consisting of HTTP API streams from a client portion with access to the department's incident log and a server portion that handles data cleaning, feature engineering and the analytics mirror database. 
+
+  &nbsp;&nbsp;&nbsp;&nbsp;**Forecasting** will be accomplished via time series regression using Python's SciKitLearn. Pandas will be used for data manipulation throughout.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;**Reporting** will provide both a web-based UI and Restful API.
+
+#### Technical requirements
+   
+  * Cloud based virtual machine: AWS EC2 t2.micro running Ubuntu 24.04
+  * RDMS: AWS Aurora running PostgreSQL16
+  * Web application: Django framework with both web browser GUI and Rest API
+  * ML pipeline: Transformations, cleaning and models via SciKitLearn
+  * Data stream generator: GoLang service on FD workstation
+
+#### Non-functional requirements
+
+  * Non-public information should not be made available without user authentication. 
+  * Maximum up time will ensure quality forecasts and actionable insights.
+  * Straightforward UI for non-technical users.
+
+
+#### Error reporting & monitoring
+
+  &nbsp;&nbsp;&nbsp;&nbsp;**System logs** will be maintained with OS, application and network warnings, errors and information. These are for developers to monitor the status of the web app and address any issues. Email **alerts** will be used to notify developers when errors are logged.
+
+  &nbsp;&nbsp;&nbsp;&nbsp;The Django messages framework will be utilized to generate and display notifications to users on the web app's GUI. These will include warnings, errors and information.
+
+#### Architecture & design
+ 
+ &nbsp;&nbsp;&nbsp;&nbsp;Below is a flowchart to illustrate how the system works and how users navigate through it. A description of how each element interacts with one another follows.
+
+  ![png](docs/imgs/architecture.png)
+
+  **(A):** The stream generator is a custom GoLang package that retrieves call log data from the fire department data base by issuing queries. The data base returns results to the generator.
+
+  **(B):** The generator will need to query the API with a GET request in order to determine which records are new and must be sent. The API will respond with the latest call in the data base. The generator service will then issue a POST request to the API with the latest incidents.
+
+  **(C):** The API must write new incidents into the data base. The API will also query the data base for call meta data (i.e. most recent call.) Finally, the API can also be used for programmatic access to the raw data, ML model meta data and forecasts themselves.
+
+  **(D):** The web application will be used to construct the views needed for the API to perform its duties. These include providing serializers, view sets and filters.
+
+  **(E):** The web application will query the data base for raw data, ML forecasts and system meta data. The data base will return query results for display in tables, reports and alerts.
+
+  **(F):** The web application will trigger ML methods: cleaning, transformations, modeling, etc. The web application will also provide the records used in training, testing and prediction. The pipeline returns prediction results and meta data about the forecasts (i.e. feature importance, confidence intervals, etc.)
+  
+  **(G):** The web application provides views that take requests and return the HTTP responses that constitute the GUI.
+
+  **(H):** Non-technical users and non-developer stake holders (firematic officers) will use the GUI to interact with the forecasts. This will occur in tables, reports and visualizations. 
+
+  **(I):** Developers and other technical users can use the GUI as well.
+
+  **(J):** Technical users will be able to use HTTP web requests to query the API directly for whatever their permissions allow (raw data, meta data, forecast data, etc.)
+
+#### Example UI
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;Users may see a main dashboard screen similar to the one shown below. This mock up captures the primary MVP objectives but does not include many stretch features that may or may not be incorporated. As development proceeds there will emerge a clearer picture of what the delivered application will be able to do and look like.
+
+  ![png](docs/imgs/UI_mockup.png)
+
+
+#### Version control, review & documentation
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;The project, including this technical specification, is stored in a **git** repository. The upstream remote for the repo can be found at [https://github.com/kgeidel/msds434-dispatch-predictions](https://github.com/kgeidel/msds434-dispatch-predictions). Additional documentation can be found in the README, `docs` directory, `man` directory and throughout the code base in the form of doc strings and comments. Stakeholders are encouraged to review this documentation and respond with their approval or concerns to the developer.

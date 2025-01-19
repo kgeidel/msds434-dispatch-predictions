@@ -196,7 +196,7 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_4_0.png)
+![png](docs/imgs/EDA_4_0.png)
     
 
 
@@ -231,7 +231,7 @@ plt.yticks([]);
 
 
     
-![png](EDA_files/EDA_6_0.png)
+![png](docs/imgs/EDA_6_0.png)
     
 
 
@@ -249,7 +249,7 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_7_0.png)
+![png](docs/imgs/EDA_7_0.png)
     
 
 
@@ -330,6 +330,6 @@ plt.yticks([]);
 
 
     
-![png](EDA_files/EDA_9_0.png)
+![png](docs/imgs/EDA_9_0.png)
     
 
