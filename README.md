@@ -370,6 +370,21 @@ plt.yticks([]);
 
   **(J):** Technical users will be able to use HTTP web requests to query the API directly for whatever their permissions allow (raw data, meta data, forecast data, etc.)
 
+#### Deployment
+
+* **dispatch-predictions** will be a containerized application (via **docker**) and deployed from a cloud based virtual machine. AWS will be utilized for its IaaS products. The developer will provision, manage, monitor and maintain the servers hosting the various components of the web app.
+
+* There are several distinct advantages to this approach when compared to other deployment tactics (such as using a PaaS framework like Elastic Beanstalk from AWS.) 
+  * Only provision what you need. You are the system admin!
+  * There are less moving parts when compared to full featured app engines that try to do it all.  
+  * Tighter control over security. PaaS products typically use shared VPCs, security rules, roles/permissions, etc. 
+  * Less dependence on a particular vendor. There are innumerable ways to get servers on the web in an affordable manner and our containerized application will run on essentially all of them. 
+
+* As development proceeds there will be deliberate efforts to try and mitigate the disadvantages to this approach (as compared to PaaS.)
+  * There is more for developers to manage. They are full stack and this means more user stories, more technologies to learn, more irons in the fire in general.
+  * As a corollary to the point above, we are not as agile as we would of been using PaaS for deployment. We must provision our own resources, maintain our own infrastructure and maintain our own CI/CD work flows.
+  * The above points can lead to higher barrier to entry for teams with out the full stack skill set or resource capacity. 
+
 #### Example UI
   
   &nbsp;&nbsp;&nbsp;&nbsp;Users may see a main dashboard screen similar to the one shown below. This mock up captures the primary MVP objectives but does not include many stretch features that may or may not be incorporated. As development proceeds there will emerge a clearer picture of what the delivered application will be able to do and look like.
