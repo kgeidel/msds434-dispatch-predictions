@@ -159,3 +159,5 @@ Assignment*.zip
 *.bak
 .~*
 
+# MSDS 434 stuff
+*/migrations/*

@@ -3,7 +3,7 @@ from calls.views import *
 
 
 urlpatterns = [
-    # path("", HomePageView.as_view(), name="research-home"),
+    path("", HomePageView.as_view(), name="calls-home"),
     # path("compose-home", ComposeHome.as_view(), name="compose-home"),
     # path("author-lookup", AuthorLookup.as_view(), name="author-lookup"),
     # path("author-update/<int:pk>", AuthorUpdate.as_view(), name="author-update"),
