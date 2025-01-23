@@ -1,6 +1,7 @@
 # Python imports
 import os
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 # Third party imports
 from dotenv import load_dotenv
@@ -114,6 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'America/New_York'
+TIME_ZONE_OBJ = ZoneInfo(TIME_ZONE)
 
 USE_I18N = True
 
