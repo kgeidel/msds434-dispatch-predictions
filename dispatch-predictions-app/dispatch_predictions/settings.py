@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'bootstrap4',
     'crispy_bootstrap4',
+    'bootstrap_datepicker_plus',
     'markdownify',
     # dispatch prediction apps
     'calls',
@@ -149,6 +150,13 @@ BOOTSTRAP4 = {
 
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/bootstrap4.html'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+DJANGO_TABLES2_TABLE_ATTRS = {
+    'class': 'table table-hover',
+    'thead': {
+        'class': 'table-light',
+    },
+}
 
 # Django RESTful API settings
 REST_FRAMEWORK = {
