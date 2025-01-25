@@ -24,6 +24,9 @@ class Incident(Model):
     duration = FloatField(null=True, blank=True)
     history = HistoricalRecords(related_name='log')
 
+    def __str__(self):
+        return self.num
+
 class DISP(Model):
     type_str = CharField(max_length=255, unique=True)
     history = HistoricalRecords(related_name='log')

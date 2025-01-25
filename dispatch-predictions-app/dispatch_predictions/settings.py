@@ -19,6 +19,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+WEB_APP_ENDPOINT = os.getenv('WEB_APP_ENDPOINT', 'localhost:8000')
 
 # Application definition
 
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
     # Django add ons
     'django.contrib.postgres',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_extensions',
     # 3rd party apps
     'django_filters',
@@ -161,5 +163,9 @@ DJANGO_TABLES2_TABLE_ATTRS = {
 # Django RESTful API settings
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 25
+    'PAGE_SIZE': 25,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
 }
