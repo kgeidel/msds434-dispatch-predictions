@@ -13,9 +13,9 @@ from simple_history.models import HistoricalRecords, HistoricForeignKey
 class Incident(Model):
     ''' An instance of this model represents a single response to a 911 call. '''
 
-    num = CharField(max_length=11, verbose_name="Call #", unique=True)
-    fd_id = CharField(max_length=8, null=True, blank=True)
+    num = CharField(max_length=11, verbose_name="Call #")
     dtg_alarm = DateTimeField()
+    fd_id = CharField(max_length=8, null=True, blank=True)
     street_number = CharField(max_length=8, null=True, blank=True)
     route = CharField(max_length=255, null=True, blank=True)
     suite = CharField(max_length=8, null=True, blank=True)
@@ -23,6 +23,13 @@ class Incident(Model):
     disp = HistoricForeignKey('calls.DISP', on_delete=SET_NULL, blank=True, null=True)
     duration = FloatField(null=True, blank=True)
     history = HistoricalRecords(related_name='log')
+
+    class Meta:
+        constraints = [UniqueConstraint(fields=['num', 'dtg_alarm'], name='unique_incident')]
+        indexes = [
+            Index(fields=['num', 'dtg_alarm']),
+            Index(fields=['dtg_alarm']),
+        ]
 
     def __str__(self):
         return self.num

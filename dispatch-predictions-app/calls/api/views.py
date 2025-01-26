@@ -34,10 +34,18 @@ class IncidentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def bulk_update_or_create(self, request):
         ''' Iterate over JSON objects and update_or_create incidents '''
-        print("THE THE REQUEST DATA: ", request.data)
+        results = []
+        for call_dict in request.data:
+            obj, c = Incident.objects.update_or_create(
+                num = obj['num'],
+                dtg_alarm = obj.get('dtg_alarm'),
+                defaults = dict(
+                    fd_id = obj.get('fd_id')
+                )
+            )
 
 
-        
+
         return Response({'status': 'the action ran!'})
 
     def destroy(self, request, pk=None):
