@@ -460,6 +460,28 @@ for index, record in tqdm(df.iterrows()):
 #### Stream processing of new incident records
 
 Once the database is caught up with the system of record (the firehouse's MS SQL Server) we only need to process new calls as they occur. 
+
 ```
-In the final state this will be accomplished by a Go application that runs on a workstation with access to the system of record. While this component is still being developed, I have completed the REST API that can accept a list of new calls via POST web requests. This component will be demonstrated below.
+In the final state this will be accomplished by a Go application that runs on a workstation with access to the system of record. While this component is still being developed, I have completed the REST API that will accept the list of new calls via POST web requests. This component will be demonstrated below.
 ```
+
+Here is a python example of what the Go application would need to replicate to add records to the database (this could also be accomplished with curl or the browsable API site.)
+
+```python
+import requests, json, os
+from pprint import pprint
+
+token = os.getenv('WEB_APP_API_TOKEN')
+
+data = [
+    {'num': 'FOO', 'dtg_alarm': "1998-08-28T13:41:00-05:00"},
+    {'num': 'BAR', 'dtg_alarm': "2525-01-02T13:41:00-05:00"},
+]
+
+requests.post(
+    'http://localhost:8000/api/calls/bulk_update_or_create/', 
+    headers={'Authorization': f'Token {token}'}, json=data
+)
+```
+
+This would add two calls, one with call number "FOO" and the other "BAR" to the database. This process is demonstrated in the Week 4 project update video.
