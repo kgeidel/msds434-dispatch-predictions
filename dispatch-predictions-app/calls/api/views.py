@@ -34,19 +34,42 @@ class IncidentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def bulk_update_or_create(self, request):
         ''' Iterate over JSON objects and update_or_create incidents '''
-        results = []
+        results = {'created_calls':0, 'created_disp':0, 'error_calls':0, 'error_disp':0, 'error_msgs':[]}
         for call_dict in request.data:
-            obj, c = Incident.objects.update_or_create(
-                num = obj['num'],
-                dtg_alarm = obj.get('dtg_alarm'),
-                defaults = dict(
-                    fd_id = obj.get('fd_id')
+            # Create the DISP
+            disp_str = call_dict.get('type_str')
+            if disp_str is not None:
+                try:
+                    disp, c = DISP.objects.get_or_create(type_str=disp_str)
+                    if c:
+                        results['created_disp'] += 1
+                except Exception as e:
+                    disp = None
+                    results['error_msgs'].append('DISP: '+str(e))
+                    results['error_disp'] += 1
+            else:
+                disp = None
+            # Create the Incident
+            try:
+                obj, c = Incident.objects.update_or_create(
+                    num = call_dict['num'],
+                    dtg_alarm = call_dict.get('dtg_alarm'),
+                    defaults = dict(
+                        fd_id = call_dict.get('fd_id'),
+                        street_number = call_dict.get('street_number'),
+                        route = call_dict.get('route'),
+                        suite = call_dict.get('suite'),
+                        postal_code = call_dict.get('postal_code'),
+                        duration = call_dict.get('duration'),
+                        disp = disp,
+                    )
                 )
-            )
-
-
-
-        return Response({'status': 'the action ran!'})
+                if c:
+                    results['created_calls'] += 1
+            except Exception as e:
+                results['error_msgs'].append('Incident: '+str(e))
+                results['error_calls'] += 1
+        return Response(results)
 
     def destroy(self, request, pk=None):
         # Do not allow delete from the API
