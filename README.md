@@ -24,6 +24,7 @@ March 16, 2025
 - [Step 1: Identify the problem](#the-problem)
 - [Step 2: Identify the data set](#the-data-set)
 - [Step 3: Construct a functional specification](#functional-specification)
+- [Step 4: Data ingest](#data-ingest)
 
 ## The problem
 
@@ -395,3 +396,70 @@ plt.yticks([]);
 #### Version control, review & documentation
   
   &nbsp;&nbsp;&nbsp;&nbsp;The project, including this technical specification, is stored in a **git** repository. The upstream remote for the repo can be found at [https://github.com/kgeidel/msds434-dispatch-predictions](https://github.com/kgeidel/msds434-dispatch-predictions). Additional documentation can be found in the README, `docs` directory, `man` directory and throughout the code base in the form of doc strings and comments. Stakeholders are encouraged to review this documentation and respond with their approval or concerns to the developer.
+
+## Data ingest
+
+There are two vectors for loading incident records into the database. The first is [a bulk upload](#bulk-upload-of-redalertnmx-exports) for back populating purposes. The second is the primary way in which the database receives new records and involves [sending records through a web-based RESTful API](#stream-processing-of-new-incident-records).
+
+#### Bulk upload of RedAlertNMX exports
+
+In the Django project directory (`dispatch-predictions-app`) is a Jupyter notebook with a script that can load records from an excel spreadsheet (xls format.) This logic could easily be moved to a static method on the **Incident** model but this process it only for populating a fresh database with historical records. It will not be used once the database is populated and the entirety of the architecture is deployed.
+
+The spreadsheet comes from the client application used by the firehouse- *RedAlertNMX*. There are about 15,400 records so they easily fit in a single spreadsheet. There is some column cleaning and preprocessing that must take place in the script before the records are fit for consumption.
+
+Pandas is used to load the data from the spreadsheet and perform the preprocessing steps. Once the data is cleaned we iterate through the records of the dataframe and use the Django ORM to create the instances.
+
+```python
+# Python imports
+import os
+
+# Django imports
+from django.utils import timezone
+import datetime as dt
+
+# 3rd party imports
+from tqdm import tqdm
+import pandas as pd
+pd.set_option('display.max_rows', 500)
+
+# Intraproject imports
+import django_init
+from django.conf import settings
+from calls.models import Incident, DISP
+
+# load into pandas dataframe with proper cleaning & transforming
+input_path = os.path.join(
+    settings.BASE_DIR.parent, 
+    'data', '2025_01_14_hfd_incident_log.xls',
+)
+
+df = pd.read_excel(input_path, parse_dates=[['Date', 'Alarm']])
+df = df.dropna(subset=['Incident#'])
+df['FDID'] = df['FDID'].astype(str)
+df['Date_Alarm'] = df['Date_Alarm'].astype('datetime64[s]')
+broken_type = 'Unintentional system/detector operation (no '
+df.loc[df['Type']==broken_type, 'Type'] = broken_type + 'fire)'
+
+# load into database
+
+for index, record in tqdm(df.iterrows()):
+  Incident.objects.get_or_create(
+      num = str(record['Incident#']).strip(),
+      dtg_alarm = record['Date_Alarm'].to_pydatetime().astimezone(settings.TIME_ZONE_OBJ),
+      defaults = dict(
+          fd_id = str(record['FDID']).strip('.0'),
+          street_number = str(record['Num']).strip() if pd.notna(record['Num']) else None,
+          route = str(record['Address']).strip() if pd.notna(record['Address']) else None,
+          suite = str(record['Suite']).strip() if pd.notna(record['Suite']) else None,
+          postal_code = str(record['Zip']).replace('-', '').strip()[:5] if pd.notna(record['Zip']) else None,
+          disp = DISP.objects.get_or_create(type_str=str(record['Type']).strip())[0] if pd.notna(record['Type']) else None,
+          duration = record['Lgth'] if pd.notna(record['Lgth']) else None,
+      )
+)
+```
+#### Stream processing of new incident records
+
+Once the database is caught up with the system of record (the firehouse's MS SQL Server) we only need to process new calls as they occur. 
+```
+In the final state this will be accomplished by a Go application that runs on a workstation with access to the system of record. While this component is still being developed, I have completed the REST API that can accept a list of new calls via POST web requests. This component will be demonstrated below.
+```

@@ -31,6 +31,16 @@ class IncidentViewSet(viewsets.ModelViewSet):
     serializer_class = IncidentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @action(detail=False, methods=['get'])
+    def get_sync_filters(self, request):
+        ''' Returns the dtg that should be used for finding incidents that need to be processed '''
+        dtg = Incident.objects.order_by('-dtg_alarm').first().dtg_alarm
+        return Response(
+            {
+                'most_recent_incident': str(dtg.astimezone(settings.TIME_ZONE_OBJ))
+            }
+        )
+
     @action(detail=False, methods=['post'])
     def bulk_update_or_create(self, request):
         ''' Iterate over JSON objects and update_or_create incidents '''
