@@ -62,14 +62,14 @@ class IncidentViewSet(viewsets.ModelViewSet):
             # Create the Incident
             try:
                 obj, c = Incident.objects.update_or_create(
-                    num = call_dict['num'],
-                    dtg_alarm = call_dict.get('dtg_alarm'),
+                    num = call_dict['num'].strip(),
+                    dtg_alarm = call_dict.get('dtg_alarm').strip(),
                     defaults = dict(
-                        fd_id = call_dict.get('fd_id'),
-                        street_number = call_dict.get('street_number'),
-                        route = call_dict.get('route'),
-                        suite = call_dict.get('suite'),
-                        postal_code = call_dict.get('postal_code'),
+                        fd_id = call_dict.get('fd_id').strip() if call_dict.get('fd_id') else None,
+                        street_number = call_dict.get('street_number').strip() if call_dict.get('street_number') else None,
+                        route = call_dict.get('route').strip() if call_dict.get('route') else None,
+                        suite = call_dict.get('suite').strip() if call_dict.get('suite') else None,
+                        postal_code = call_dict.get('postal_code').strip() if call_dict.get('postal_code') else None,
                         duration = call_dict.get('duration'),
                         disp = disp,
                     )
