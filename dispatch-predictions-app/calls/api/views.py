@@ -50,7 +50,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
             disp_str = call_dict.get('type_str')
             if disp_str is not None:
                 try:
-                    disp, c = DISP.objects.get_or_create(type_str=disp_str)
+                    disp, c = DISP.objects.get_or_create(type_str=disp_str.strip())
                     if c:
                         results['created_disp'] += 1
                 except Exception as e:
