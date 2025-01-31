@@ -30,6 +30,7 @@ class Incident(Model):
             Index(fields=['num', 'dtg_alarm']),
             Index(fields=['dtg_alarm']),
         ]
+        ordering = ['-dtg_alarm']
 
     def __str__(self):
         return self.num
