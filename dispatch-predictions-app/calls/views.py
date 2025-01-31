@@ -36,3 +36,17 @@ class IncidentLookup(CallsBase, SaveFilterMixin, FilterView):
     model = Incident
     filterset_class = IncidentFilter
     table_class = IncidentTable
+
+#### DISP views
+########################
+class DISPLookup(CallsBase, SaveFilterMixin, FilterView):
+    model = DISP
+    filterset_class = DISPFilter
+    table_class = DISPTable
+
+    def get_table_data(self):
+        data = super(DISPLookup, self).get_table_data()
+        return data.distinct()
+    
+    def get_queryset(self):
+        return DISP.objects.annotate(call_count = Count('incident'))

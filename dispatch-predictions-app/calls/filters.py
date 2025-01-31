@@ -58,3 +58,25 @@ class IncidentFilter(FilterSetBase):
                 ),
             ),
         )
+
+class DISPFilter(FilterSetBase):
+    class Meta:
+        model = DISP
+        fields = {
+            'type_str': ['icontains'],
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form.fields['type_str__icontains'].label = 'Disposition contains'
+        self.form.helper.layout = Layout(
+            Fieldset('',
+                Row(
+                    Div('type_str__icontains', css_class='ml-2 col-flex'),
+                ),
+            ),
+        )
+
+    @property
+    def qs(self):
+        return super().qs.annotate(call_count = Count('incident'))
