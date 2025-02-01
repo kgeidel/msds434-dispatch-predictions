@@ -4,6 +4,7 @@ asttokens==3.0.0
 attrs==24.3.0
 beautifulsoup4==4.12.3
 bleach==6.2.0
+boto3==1.36.11
 certifi==2024.12.14
 charset-normalizer==3.4.1
 comm==0.2.2
