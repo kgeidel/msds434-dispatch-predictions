@@ -23,7 +23,7 @@ type DateResponse struct {
 }
 
 func main() {
-	date_str := get_filter_date()
+	date_str := "2025-01-13"
 	fmt.Println(date_str)
 }
 
