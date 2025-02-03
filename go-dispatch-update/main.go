@@ -28,7 +28,7 @@ import (
 var (
 	api_host       = "3.139.234.43"
 	api_port       = "8000"
-	token_filepath = "../.token"
+	token_filepath = "/home/kevin/repos/msds434-dispatch-predictions/.token"
 	db_name        = "REDNMX"
 )
 
