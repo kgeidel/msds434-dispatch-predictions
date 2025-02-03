@@ -1,5 +1,14 @@
 package main
 
+////////////////////////////////////////////////////////
+// Kevin Geidel
+// MSDS 434 - Section 55 - Winter '25
+// dispatch-predictions - main.go
+//
+// Go based package that keeps the hfddc database
+// up-to-date with the latest incident records.
+////////////////////////////////////////////////////////
+
 import (
 	"context"
 	"database/sql"
@@ -30,23 +39,23 @@ type DateResponse struct {
 
 // A struct to contain an individual incident record
 type Incident struct {
-	num           string `json:"num"`
-	dtg_alarm     string `json:"dtg_alarm"`
-	fd_id         string `json:"fd_id"`
-	street_number string `json:"street_number"`
-	route         string `json:"route"`
-	suite         string `json:"suite"`
-	postal_code   string `json:"postal_code"`
-	call_duration string `json:"duration"`
-	type_str      string `json:"type_str"`
+	Num           string `json:"num"`
+	Dtg_alarm     string `json:"dtg_alarm"`
+	Fd_id         string `json:"fd_id"`
+	Street_number string `json:"street_number"`
+	Route         string `json:"route"`
+	Suite         string `json:"suite"`
+	Postal_code   string `json:"postal_code"`
+	Call_duration string `json:"duration"`
+	Type_str      string `json:"type_str"`
 }
 
 func main() {
-	query_db()
+	incidents := get_incident_records()
+
 }
 
-// Establish db settings
-func query_db() {
+func get_incident_records() []Incident {
 	// M$ SQL Server
 	// Establish context
 	ctx, stop := context.WithCancel(context.Background())
@@ -91,28 +100,31 @@ func query_db() {
 	}
 	defer rows.Close()
 	// process the results
-	var incident Incident
+	var incidents []Incident
 	for rows.Next() {
+		var incident Incident
 		err = rows.Scan(
-			&incident.num,
-			&incident.dtg_alarm,
-			&incident.fd_id,
-			&incident.street_number,
-			&incident.route,
-			&incident.suite,
-			&incident.postal_code,
-			&incident.call_duration,
-			&incident.type_str,
+			&incident.Num,
+			&incident.Dtg_alarm,
+			&incident.Fd_id,
+			&incident.Street_number,
+			&incident.Route,
+			&incident.Suite,
+			&incident.Postal_code,
+			&incident.Call_duration,
+			&incident.Type_str,
 		)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(incident.num)
+		// add the record to the slice of incidents
+		incidents = append(incidents, incident)
 	}
 	err = rows.Err()
 	if err != nil {
 		log.Fatal(err)
 	}
+	return incidents
 }
 
 // Connect to the M$ SQL Server
