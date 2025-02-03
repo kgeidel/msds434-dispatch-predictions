@@ -10,6 +10,7 @@ package main
 ////////////////////////////////////////////////////////
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -52,7 +53,48 @@ type Incident struct {
 
 func main() {
 	incidents := get_incident_records()
+	post_incidents(incidents)
+}
 
+// submit incidents to api bulk_update_or_create POST
+func post_incidents(incidents []Incident) {
+	// If no records in slice do nothing
+	if len(incidents) == 0 {
+		fmt.Println("No incidents returned.")
+		return
+	}
+	// pack incident records into JSON
+	data, err := json.Marshal(incidents)
+	if err != nil {
+		fmt.Println(err)
+		log.Fatal("Error marshaling JSON.")
+		return
+	}
+	// Create a new POST request
+	endpoint_url := "http://" + api_host + ":" + api_port + "/api/calls/bulk_update_or_create/"
+	request, err := http.NewRequest("POST", endpoint_url, bytes.NewBuffer(data))
+	if err != nil {
+		fmt.Println(err)
+		log.Fatal("Error creating POST request.")
+		return
+	}
+	// Set the Content-Type headers
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Authorization", get_api_auth_str())
+
+	// Send the request
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		fmt.Println(err)
+		log.Fatal("Error sending POST request.")
+		return
+	}
+	defer response.Body.Close()
+
+	// Handle the response
+	body, _ := io.ReadAll(response.Body)
+	fmt.Println("Response status:", response.Status, string(body))
 }
 
 func get_incident_records() []Incident {
@@ -117,6 +159,8 @@ func get_incident_records() []Incident {
 		if err != nil {
 			log.Fatal(err)
 		}
+		// clean incident num
+		incident.Num = format_incident_num(incident.Num)
 		// add the record to the slice of incidents
 		incidents = append(incidents, incident)
 	}
@@ -132,7 +176,8 @@ func OpenDbConnection(ctx context.Context, db *sql.DB) {
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 	if err := db.PingContext(ctx); err != nil {
-		log.Fatal("Unable to connect to database: %v", err)
+		fmt.Println(err)
+		log.Fatal("Unable to connect to database.")
 	}
 }
 
@@ -150,7 +195,7 @@ func get_qstr() string {
 	COALESCE(n5inctype.DESCR, '') as type_str		
 from
 	dbo.nfirsmain
-	JOIN dbo.n5inctype on nfirsmain.SITFOUND=code
+	LEFT JOIN dbo.n5inctype on nfirsmain.SITFOUND=code
 where
 	DATETIMEALARM >= '%s';
 	`, get_filter_date())
@@ -198,4 +243,9 @@ func get_api_auth_str() string {
 		log.Fatal(err)
 	}
 	return string(content)
+}
+
+// Prepare call number for DB insertion
+func format_incident_num(num string) string {
+	return num[:4] + "-" + num[4:]
 }
