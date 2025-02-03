@@ -48,7 +48,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
         for call_dict in request.data:
             # Create the DISP
             disp_str = call_dict.get('type_str')
-            if disp_str is not None:
+            if disp_str:
                 try:
                     disp, c = DISP.objects.get_or_create(type_str=disp_str.strip())
                     if c:
