@@ -25,6 +25,7 @@ March 16, 2025
 - [Step 2: Identify the data set](#the-data-set)
 - [Step 3: Construct a functional specification](#functional-specification)
 - [Step 4: Data ingest](#data-ingest)
+- [Step 5: ML demonstration](#exploring-ml-options)
 
 ## The problem
 
@@ -485,3 +486,9 @@ requests.post(
 ```
 
 This would add two calls, one with call number "FOO" and the other "BAR" to the database. This process is demonstrated in the Week 4 project update video.
+
+## Exploring ML options
+
+Several methods of deploying Machine Learning (ML) models were evaluated. The benchmark cloud platform services were compared to is a locally hosted SciKitLearn model and pipeline. The first cloud based method involves an ETL from the production database (RDS) into Red Shift and using Auto ML's Forecast model. The second invoked Sage maker studio and the third uses the Sage maker Python SDK for programmatic control of the prerequisite AWS resources.
+
+Sake maker SDK was selected to deploy the project's ML component moving forward. AWS Forecast took a very long time to train and predict and was quite expensive, even for the minimal experiment that was run. The benefits of Sage maker SDK, used in conjunction with boto3, is the ability to develop processing pipelines right in the web application. 
