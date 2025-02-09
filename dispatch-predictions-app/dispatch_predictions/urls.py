@@ -17,5 +17,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('calls/', include('calls.urls')),
+    path('forecast/', include('forecast.urls')),
 
 ] + static(settings.STATIC_URL, documents_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, documents_root=settings.MEDIA_ROOT)

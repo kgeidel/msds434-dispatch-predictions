@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'markdownify',
     # dispatch prediction apps
     'calls',
+    'forecast',
 ]
 
 MIDDLEWARE = [
