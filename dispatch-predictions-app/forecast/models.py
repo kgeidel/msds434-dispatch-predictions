@@ -168,7 +168,7 @@ class Forecast(models.Model):
         Forecast.objects.create(predictions_json=predictions_json)
     
     @classmethod
-    def clean_up_sagemaker_resources(cls):
+    def clean_up_sagemaker_resources(cls, delete_experiments=False):
         client = cls.get_sagemaker_client()
         # Delete Models
         for model in client.list_models().get('Models'):
@@ -179,22 +179,23 @@ class Forecast(models.Model):
         # Endpoint configs  
         for record in client.list_endpoint_configs().get('EndpointConfigs'):
             client.delete_endpoint_config(EndpointConfigName=record.get('EndpointConfigName'))
-        # auto_ml experiments
-        trials = [r.get('TrialName') for r in client.list_trials().get('TrialSummaries')]
-        components = [r.get('TrialComponentName') for r in client.list_trial_components().get('TrialComponentSummaries')]
-        # disassociate all components from all trials
-        print("disassociating components from trials...")
-        for component, trial in tqdm(product(components, trials)):
-            client.disassociate_trial_component(TrialComponentName=component, TrialName=trial)
-        # should be able to delete them now
-        print("deleting components...")
-        for component in tqdm(components):
-            client.delete_trial_component(TrialComponentName=component)
-        print("deleting trials...")
-        for trial in tqdm(trials):
-            client.delete_trial(TrialName=trial)
-        # Experiments should be OK to delete now...
-        print("deleting auto_ml_jobs...")
-        for experiment in tqdm(client.list_experiments().get('ExperimentSummaries')):
-            print(experiment)
-            client.delete_experiment(ExperimentName=experiment.get('ExperimentName'))
+        if delete_experiments:
+            # auto_ml experiments
+            trials = [r.get('TrialName') for r in client.list_trials().get('TrialSummaries')]
+            components = [r.get('TrialComponentName') for r in client.list_trial_components().get('TrialComponentSummaries')]
+            # disassociate all components from all trials
+            print("disassociating components from trials...")
+            for component, trial in tqdm(product(components, trials)):
+                client.disassociate_trial_component(TrialComponentName=component, TrialName=trial)
+            # should be able to delete them now
+            print("deleting components...")
+            for component in tqdm(components):
+                client.delete_trial_component(TrialComponentName=component)
+            print("deleting trials...")
+            for trial in tqdm(trials):
+                client.delete_trial(TrialName=trial)
+            # Experiments should be OK to delete now...
+            print("deleting auto_ml_jobs...")
+            for experiment in tqdm(client.list_experiments().get('ExperimentSummaries')):
+                print(experiment)
+                client.delete_experiment(ExperimentName=experiment.get('ExperimentName'))
