@@ -22,14 +22,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/joho/godotenv"
 	_ "github.com/microsoft/go-mssqldb"
-)
-
-var (
-	api_host       = "3.139.234.43"
-	api_port       = "8000"
-	token_filepath = "/home/kevin/repos/msds434-dispatch-predictions/.token"
-	db_name        = "REDNMX"
 )
 
 // For parsing the API response containing filter date
@@ -52,6 +46,11 @@ type Incident struct {
 }
 
 func main() {
+	// Load env
+	err := godotenv.Load("go.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	incidents := get_incident_records()
 	post_incidents(incidents)
 }
@@ -71,6 +70,8 @@ func post_incidents(incidents []Incident) {
 		return
 	}
 	// Create a new POST request
+	api_host := os.Getenv("api_host")
+	api_port := os.Getenv("api_port")
 	endpoint_url := "http://" + api_host + ":" + api_port + "/api/calls/bulk_update_or_create/"
 	request, err := http.NewRequest("POST", endpoint_url, bytes.NewBuffer(data))
 	if err != nil {
@@ -79,8 +80,9 @@ func post_incidents(incidents []Incident) {
 		return
 	}
 	// Set the Content-Type headers
+	auth_str := fmt.Sprintf("Token %s", os.Getenv("api_token"))
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", get_api_auth_str())
+	request.Header.Set("Authorization", auth_str)
 
 	// Send the request
 	client := &http.Client{}
@@ -120,6 +122,7 @@ func get_incident_records() []Incident {
 	if !ok {
 		fmt.Println("REDALERT_DB_PASSWORD is not set")
 	}
+	db_name := os.Getenv("db_name")
 	dsn := fmt.Sprintf("sqlserver://%s:%s@%s:1433?database=%s", REDALERT_DB_USER, REDALERT_DB_PASSWORD, REDALERT_DB_HOST, db_name)
 	db, err := sql.Open("sqlserver", dsn)
 	if err != nil {
@@ -204,6 +207,8 @@ where
 
 // Return a string representation of the date to use when querying call db
 func get_filter_date() string {
+	api_host := os.Getenv("api_host")
+	api_port := os.Getenv("api_port")
 	endpoint_url := "http://" + api_host + ":" + api_port + "/api/calls/get_sync_filters/"
 	client := http.Client{Timeout: 5 * time.Second}
 	request, err := http.NewRequest(http.MethodGet, endpoint_url, nil)
@@ -211,7 +216,8 @@ func get_filter_date() string {
 		log.Fatalf("Error creating request: %v", err)
 	}
 	// Set the Authorization header with the bearer token
-	request.Header.Set("Authorization", get_api_auth_str())
+	auth_str := fmt.Sprintf("Token %s", os.Getenv("api_token"))
+	request.Header.Set("Authorization", auth_str)
 	// Send the request
 	response, err := client.Do(request)
 	if err != nil {
@@ -234,15 +240,6 @@ func get_filter_date() string {
 		log.Fatalf("Expected dtg str, got empty str. API response: {detail: %v}", dateresponse.Detail)
 	}
 	return dateresponse.Dtg[:10]
-}
-
-// Extract the API web token value from the .token file
-func get_api_auth_str() string {
-	content, err := os.ReadFile(token_filepath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return string(content)
 }
 
 // Prepare call number for DB insertion
