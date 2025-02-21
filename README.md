@@ -26,6 +26,12 @@ March 16, 2025
 - [Step 3: Construct a functional specification](#functional-specification)
 - [Step 4: Data ingest](#data-ingest)
 - [Step 5: ML demonstration](#exploring-ml-options)
+- [Step 6: ML deployment](#ml-deployment)
+- [Step 7: Microservice development](#microservice-development)
+- [Step 8: Microservice deployment](#microservice-deployment)
+- Step 9: Performance monitoring
+- Step 10: Production environment
+- Reflection
 
 ## The problem
 
@@ -492,3 +498,38 @@ This would add two calls, one with call number "FOO" and the other "BAR" to the 
 Several methods of deploying Machine Learning (ML) models were evaluated. The benchmark cloud platform services were compared to is a locally hosted SciKitLearn model and pipeline. The first cloud based method involves an ETL from the production database (RDS) into Red Shift and using Auto ML's Forecast model. The second invoked Sage maker studio and the third uses the Sage maker Python SDK for programmatic control of the prerequisite AWS resources.
 
 Sake maker SDK was selected to deploy the project's ML component moving forward. AWS Forecast took a very long time to train and predict and was quite expensive, even for the minimal experiment that was run. The benefits of Sage maker SDK, used in conjunction with boto3, is the ability to develop processing pipelines right in the web application. 
+
+## ML deployment
+
+The Sage maker SDK client and resource API object were used to build classmethods for the Forecast model. These methods constitute the ML pipeline that dispatch-predictions must run (likely weekly.) Programmatic Time Series forecasting is extreamly problematic with AWS cloud products. Sage maker and AutoML require transformations to approximate time series forecasting. The AWS Forecast models are no longer available programmatically to new users. Because of these factors the auto_ml_experiment methods from the sage maker SDK are likely to be replaced by a similar SciKitLearn pipeline. This will allow for native time series forecasting, avoid expensive AutoML experiments and simplify the AWS resources needed. This refactor would aim to mimic the sage maker process already developed and demonstrated.
+
+## Microservice development
+
+A GoLang microservice was developed for dispatch-predictions. The job of this service is to obtain filter parameters from the web app, use the returned arguments to query new incidents from the firehouse incident system of record and finally post the new incidents to the web app's API for processing. 
+
+The microservice uses the `github.com/microsoft/go-mssqldb` package to query the MS SQL server that functions as the firehouse's system of record for emergency calls.
+
+![M$ SQL QSTR](docs/imgs/microservice_qstr.png)
+
+The returned results are mapped into a slice of Go structs. We include json field attribute names for marshalling to POST request payloads.
+
+```go
+// A struct to contain an individual incident record
+type Incident struct {
+	Num           string `json:"num"`
+	Dtg_alarm     string `json:"dtg_alarm"`
+	Fd_id         string `json:"fd_id"`
+	Street_number string `json:"street_number"`
+	Route         string `json:"route"`
+	Suite         string `json:"suite"`
+	Postal_code   string `json:"postal_code"`
+	Call_duration string `json:"duration"`
+	Type_str      string `json:"type_str"`
+}
+```
+
+## Microservice deployment
+
+This week:
+* containerization
+* deployment with scheduler
