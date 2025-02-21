@@ -549,7 +549,7 @@ The microservice uses the `github.com/microsoft/go-mssqldb` package to query the
 
 ![M$ SQL QSTR](docs/imgs/microservice_qstr.png)
 
-The returned results are mapped into a slice of Go structs. We include json field attribute names for marshalling to POST request payloads.
+The returned results are mapped into a slice of Go structs. JSON field attribute names are included for marshalling to POST request payloads.
 
 ```go
 // A struct to contain an individual incident record
