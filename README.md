@@ -499,11 +499,47 @@ This would add two calls, one with call number "FOO" and the other "BAR" to the 
 
 Several methods of deploying Machine Learning (ML) models were evaluated. The benchmark cloud platform services were compared to is a locally hosted SciKitLearn model and pipeline. The first cloud based method involves an ETL from the production database (RDS) into Red Shift and using Auto ML's Forecast model. The second invoked Sage maker studio and the third uses the Sage maker Python SDK for programmatic control of the prerequisite AWS resources.
 
+![AutoML screenshot](docs/imgs/automl.png)
+
 Sake maker SDK was selected to deploy the project's ML component moving forward. AWS Forecast took a very long time to train and predict and was quite expensive, even for the minimal experiment that was run. The benefits of Sage maker SDK, used in conjunction with boto3, is the ability to develop processing pipelines right in the web application. 
 
 ## ML deployment
 
 The Sage maker SDK client and resource API object were used to build classmethods for the Forecast model. These methods constitute the ML pipeline that dispatch-predictions must run (likely weekly.) Programmatic Time Series forecasting is extreamly problematic with AWS cloud products. Sage maker and AutoML require transformations to approximate time series forecasting. The AWS Forecast models are no longer available programmatically to new users. Because of these factors the auto_ml_experiment methods from the sage maker SDK are likely to be replaced by a similar SciKitLearn pipeline. This will allow for native time series forecasting, avoid expensive AutoML experiments and simplify the AWS resources needed. This refactor would aim to mimic the sage maker process already developed and demonstrated.
+
+```python
+@classmethod
+def create_forecast_model(cls):
+    automl = sagemaker.AutoML.attach(auto_ml_job_name=cls.Settings.ml_auto_experiment_name)
+    # Describe and recreate the best trained model
+    best_candidate = automl.describe_auto_ml_job()['BestCandidate']
+    best_candidate_name = best_candidate['CandidateName']
+    response = automl.create_model(
+        name=best_candidate_name, 
+        candidate=best_candidate, 
+        inference_response_keys=['predicted_label']
+    )
+    return response
+
+@classmethod
+def deploy_forecast_model(cls):
+    cls.get_sagemaker_client().create_endpoint_config(
+        EndpointConfigName=f'{cls.Settings.ml_auto_experiment_name}-config',
+        ProductionVariants=[{
+            'InstanceType': 'ml.m4.xlarge',
+            'InitialInstanceCount': 1,
+            'ModelName': cls.get_best_candidate_model_name(),
+            'VariantName': 'AllTraffic'
+        }]
+    )
+    # deploy the model by creating the endpoint
+    create_endpoint_response = cls.get_sagemaker_client().create_endpoint(
+        EndpointName=f'{cls.Settings.ml_auto_experiment_name}-endpoint',
+        EndpointConfigName=f'{cls.Settings.ml_auto_experiment_name}-config'
+    )
+    return create_endpoint_response['EndpointArn']
+```
+
 
 ## Microservice development
 
