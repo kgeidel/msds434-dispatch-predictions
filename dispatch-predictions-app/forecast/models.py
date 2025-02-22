@@ -10,7 +10,9 @@ from django.db import models
 
 # 3rd party imports
 import pandas as pd
-from tqdm import tqdm
+from lightgbm import LGBMRegressor
+from skforecast.preprocessing import RollingFeatures
+from skforecast.recursive import ForecasterRecursive
 
 # Intraproject imports
 from django.conf import settings
@@ -19,14 +21,6 @@ from calls.models import Incident, DISP
 
 class Forecast(models.Model):
     ''' An instance of the class represents forecasted call volume for a specfic date range '''
-
-    class Settings:
-        ml_auto_experiment_name = 'dispatch-predictions-automl'
-        sagemaker_role_arn = os.getenv('SAGEMAKER_ROLE_ARN')
-        sagemaker_kms_arn = os.getenv('SAGEMAKER_KMS_ARN')
-        s3_bucket_name = 'dispatch-predictions'
-        data_file_name = 'incidents_per_day.csv'
-        target_attr = 'incident_count'
 
     dtg_predicted = models.DateTimeField(auto_now_add=True)
     predictions_json = models.JSONField(null=True, blank=True)
@@ -52,3 +46,28 @@ class Forecast(models.Model):
         df.columns = ['incident_count']
         df = df.sort_index()
         return df
+
+    @classmethod
+    def get_forecaster(cls):
+        forecaster = ForecasterRecursive(
+            regressor = LGBMRegressor(
+                random_state=123, 
+                verbose=-1
+            ),
+            lags = 28,
+            window_features = RollingFeatures(
+                stats=['mean'], window_sizes=10
+            ),
+        )
+        forecaster.fit(y=cls.get_ml_df()['incident_count'])
+        return forecaster
+
+    @classmethod
+    def create_forecast(cls, steps=28):
+        predictions = cls.get_forecaster().predict(steps=steps)
+        df = predictions.reset_index()
+        df.columns=['date', 'count_predicted']
+        df['date'] =df['date'].astype(str)
+        df['count_predicted'] = df['count_predicted'].apply(lambda x: round(x, 1))
+        predictions_json = df.to_json(orient='records')
+        cls.objects.create(predictions_json=predictions_json)
