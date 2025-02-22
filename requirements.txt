@@ -81,7 +81,9 @@ pyzmq==26.2.0
 referencing==0.35.1
 requests==2.32.3
 rpds-py==0.22.3
+scikit-learn==1.6.1
 six==1.17.0
+skforecast==0.14.0
 soupsieve==2.6
 sqlparse==0.5.3
 stack-data==0.6.3
