@@ -505,7 +505,7 @@ Sake maker SDK was selected to deploy the project's ML component moving forward.
 
 ## ML deployment
 
-The Sage maker SDK client and resource API object were used to build classmethods for the Forecast model. These methods constitute the ML pipeline that dispatch-predictions must run (likely weekly.) Programmatic Time Series forecasting is extreamly problematic with AWS cloud products. Sage maker and AutoML require transformations to approximate time series forecasting. The AWS Forecast models are no longer available programmatically to new users. Because of these factors the auto_ml_experiment methods from the sage maker SDK are likely to be replaced by a similar SciKitLearn pipeline. This will allow for native time series forecasting, avoid expensive AutoML experiments and simplify the AWS resources needed. This refactor would aim to mimic the sage maker process already developed and demonstrated.
+The Sage maker SDK client and resource API object were used to build classmethods for the Forecast model. These methods constitute the ML pipeline that dispatch-predictions must run (likely weekly.) Programmatic Time Series forecasting is extremely problematic with AWS cloud products. Sage maker and AutoML require transformations to approximate time series forecasting. The AWS Forecast models are no longer available programmatically to new users. Because of these factors the auto_ml_experiment methods from the sage maker SDK are likely to be replaced by a similar SciKitLearn pipeline. This will allow for native time series forecasting, avoid expensive AutoML experiments and simplify the AWS resources needed. This refactor would aim to mimic the sage maker process already developed and demonstrated.
 
 ```python
 @classmethod
@@ -549,7 +549,7 @@ The microservice uses the `github.com/microsoft/go-mssqldb` package to query the
 
 ![M$ SQL QSTR](docs/imgs/microservice_qstr.png)
 
-The returned results are mapped into a slice of Go structs. JSON field attribute names are included for marshalling to POST request payloads.
+The returned results are mapped into a slice of Go structs. JSON field attribute names are included for marshaling to POST request payloads.
 
 ```go
 // A struct to contain an individual incident record
@@ -568,6 +568,4 @@ type Incident struct {
 
 ## Microservice deployment
 
-This week:
-* containerization
-* deployment with scheduler
+The Go microservice developed to push new incidents to the RDS was deployed as a Docker container. A `docker-compose.yml` is used to describe the service. It references a Dockerfile that contains instructions for building dependencies and deploying the application. In the module 8 project update video I discuss the changes that would make sense if using this method in production (namely, moving the scheduling logic to main.go, allowing the service to run in the background without the need of a task scheduler.) That update also includes discussion about implementing a publisher/subscriber stream processing model. Instead of having the microservice communicate directly with the web app we could decouple the processes and make the uptake of new incident records asynchronous. The microservice could push new calls to a message queue (a la AWS's Simple Queue Service, SQS.) The web app could process them at its leisure. Pros and cons were discussed. First and foremost, this introduces new infrastructure and makes the overall architecture more complicated. An advantage would be calls could be entered to the queue even if the web app is down and they would be there waiting when the app came back online.
