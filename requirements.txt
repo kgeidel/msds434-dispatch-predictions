@@ -22,6 +22,7 @@ django-extensions==3.2.3
 django-filter==24.3
 django-markdownify==0.9.5
 django-pandas==0.6.7
+django-prometheus==2.3.1
 django-redshift-backend==5.0.0
 django-simple-history==3.7.0
 django-tables2==2.7.5

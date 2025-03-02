@@ -19,4 +19,6 @@ urlpatterns = [
     path('calls/', include('calls.urls')),
     path('forecast/', include('forecast.urls')),
 
+    path('', include('django_prometheus.urls')),
+
 ] + static(settings.STATIC_URL, documents_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, documents_root=settings.MEDIA_ROOT)
