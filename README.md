@@ -31,7 +31,7 @@ Please visit my <img src="https://kstatic.googleusercontent.com/files/d57b24106c
 - [Step 6: ML deployment](#ml-deployment)
 - [Step 7: Microservice development](#microservice-development)
 - [Step 8: Microservice deployment](#microservice-deployment)
-- Step 9: Performance monitoring
+- [Step 9: Performance monitoring](#resource-and-performance-monitoring)
 - Step 10: Production environment
 - Reflection
 
@@ -569,3 +569,51 @@ type Incident struct {
 ## Microservice deployment
 
 The Go microservice developed to push new incidents to the RDS was deployed as a Docker container. A `docker-compose.yml` is used to describe the service. It references a Dockerfile that contains instructions for building dependencies and deploying the application. In the module 8 project update video I discuss the changes that would make sense if using this method in production (namely, moving the scheduling logic to main.go, allowing the service to run in the background without the need of a task scheduler.) That update also includes discussion about implementing a publisher/subscriber stream processing model. Instead of having the microservice communicate directly with the web app we could decouple the processes and make the uptake of new incident records asynchronous. The microservice could push new calls to a message queue (a la AWS's Simple Queue Service, SQS.) The web app could process them at its leisure. Pros and cons were discussed. First and foremost, this introduces new infrastructure and makes the overall architecture more complicated. An advantage would be calls could be entered to the queue even if the web app is down and they would be there waiting when the app came back online.
+
+## Resource and performance monitoring
+
+The `monitoring` directory at project level contains docker-compose configurations to integrate prometheus and grafana into dispatch-predictions. To launch the monitoring spin up the services defined in the docker-compse.
+
+```shell
+# enter the monitoring directory from project root
+cd monitoring
+
+# launch the services in daemon mode
+docker compose up -d
+```
+
+To view the prometheus metrics visit the EC2's ip address at port `9090`. In order to have Django generate the metrics install the django-prometheus package `pip install django-prometheus`. You must register the package in Django settings and install the middleware at the beginning and end of any other middleware in use.
+
+```python
+# In settings.py....
+
+INSTALLED_APPS = [
+  # all the other installed apps in the Django project
+  'django_prometheus',
+]
+
+MIDDLEWARE = [
+  'django_prometheus.middleware.PrometheusBeforeMiddleware',  # MUST be 1st
+  # All the other middleware in the Django project
+  'django_prometheus.middleware.PrometheusAfterMiddleware',   # MUST be last
+]
+```
+
+```python
+# In the main urls.py...
+
+urlpatterns = [
+  # All your other url conf patterns...
+  path('', include('django_prometheus.urls')),
+]
+```
+
+With django-prometheus configured all sorts of Django metrics will be available at `[your-apps-domain]/metrics`. 
+
+![metrics](docs/imgs/monitor_03.png)
+
+Now we can track metrics that are relevant and important to us- requests by page name, memory usage, processing, etc.
+
+![metrics-2](docs/imgs/monitor_01.png)
+
+![metrics-3](docs/imgs/monitor_02.png)
