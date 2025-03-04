@@ -572,7 +572,7 @@ The Go microservice developed to push new incidents to the RDS was deployed as a
 
 ## Resource and performance monitoring
 
-The `monitoring` directory at project level contains docker-compose configurations to integrate prometheus and grafana into dispatch-predictions. To launch the monitoring spin up the services defined in the docker-compse.
+The `monitoring` directory at project level contains docker-compose configurations to integrate Prometheus and Grafana into dispatch-predictions. To launch the monitoring spin up the services defined in the docker-compose.
 
 ```shell
 # enter the monitoring directory from project root
@@ -582,7 +582,7 @@ cd monitoring
 docker compose up -d
 ```
 
-To view the prometheus metrics visit the EC2's ip address at port `9090`. In order to have Django generate the metrics install the django-prometheus package `pip install django-prometheus`. You must register the package in Django settings and install the middleware at the beginning and end of any other middleware in use.
+To view the Prometheus metrics visit the EC2's IP address at port `9090`. In order to have Django generate the metrics install the django-prometheus package `pip install django-prometheus`. You must register the package in Django settings and install the middleware at the beginning and end of any other middleware in use.
 
 ```python
 # In settings.py....
