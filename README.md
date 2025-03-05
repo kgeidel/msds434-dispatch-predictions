@@ -32,8 +32,8 @@ Please visit my <img src="https://kstatic.googleusercontent.com/files/d57b24106c
 - [Step 7: Microservice development](#microservice-development)
 - [Step 8: Microservice deployment](#microservice-deployment)
 - [Step 9: Performance monitoring](#resource-and-performance-monitoring)
-- Step 10: Production environment
-- Reflection
+- [Step 10: Production environment](#production-environment)
+- Final reflections
 
 ## The problem
 
@@ -360,15 +360,15 @@ plt.yticks([]);
 
   ![png](docs/imgs/architecture.png)
 
-  **(A):** The stream generator is a custom GoLang package that retrieves call log data from the fire department data base by issuing queries. The data base returns results to the generator.
+  **(A):** The stream generator is a custom GoLang package that retrieves call log data from the fire department database by issuing queries. The database returns results to the generator.
 
-  **(B):** The generator will need to query the API with a GET request in order to determine which records are new and must be sent. The API will respond with the latest call in the data base. The generator service will then issue a POST request to the API with the latest incidents.
+  **(B):** The generator will need to query the API with a GET request in order to determine which records are new and must be sent. The API will respond with the latest call in the database. The generator service will then issue a POST request to the API with the latest incidents.
 
-  **(C):** The API must write new incidents into the data base. The API will also query the data base for call meta data (i.e. most recent call.) Finally, the API can also be used for programmatic access to the raw data, ML model meta data and forecasts themselves.
+  **(C):** The API must write new incidents into the database. The API will also query the database for call meta data (i.e. most recent call.) Finally, the API can also be used for programmatic access to the raw data, ML model meta data and forecasts themselves.
 
   **(D):** The web application will be used to construct the views needed for the API to perform its duties. These include providing serializers, view sets and filters.
 
-  **(E):** The web application will query the data base for raw data, ML forecasts and system meta data. The data base will return query results for display in tables, reports and alerts.
+  **(E):** The web application will query the database for raw data, ML forecasts and system meta data. The database will return query results for display in tables, reports and alerts.
 
   **(F):** The web application will trigger ML methods: cleaning, transformations, modeling, etc. The web application will also provide the records used in training, testing and prediction. The pipeline returns prediction results and meta data about the forecasts (i.e. feature importance, confidence intervals, etc.)
   
@@ -617,3 +617,37 @@ Now we can track metrics that are relevant and important to us- requests by page
 ![metrics-2](docs/imgs/monitor_01.png)
 
 ![metrics-3](docs/imgs/monitor_02.png)
+
+## Production environment
+
+Separating development and production environments is an important, industry standard, SOP that ensures higher up time, fewer bugs and better user experience. These incur additional costs and add complexity to the DevOps infrastructure but are essential for balancing data integrity, security and application stability with agile project management, innovation and development. There are several components in place to productionize dispatch-predictions.
+
+#### Separate resources/parallel architecture
+
+Having dedicated resources for each environment is a must- particularly with infrastructure that affects user experience or data. databases and web servers are logical assets to have segregated. Your production data, especially when and where you are the system of record, should not be contaminated with dev data, data made from factories or test data. It will be essential for development to have a sandbox database in which you can create, alter and delete records without any regard for novel production data. Having a development webserver, removed from the production web server, allows the developers to implement features incrementally without inconveniencing users with server errors, broken pages or half deployed tools.
+
+For dispatch-predictions there are two main components and each have separate assets in each environment. For the development environment the database is the local machine's postgres installation. The production database is a postgres based AWS Relational Database Service (RDS). 
+
+#### Environment variables
+
+The various components of the application will use environment variables to distinguish between the two environments. The database engine, host address, username and password are different in the different environments. A `.env` file exists in each environment with values for their respective assets. Application layer logic can use the environment variables to tailor the connections appropriately. 
+
+Additionally, environment variables contain secrets. `.env` files do not enter the git repository and have restrictive permissions for security. Because they are not tracked by git they must be created separately- one for each environment. Among these secrets are the AWS account credentials needed by the application to interact with AWS resources.
+
+#### Branches
+
+Maintaining disparate code branches can also separate development and production environments. All work is performed on the "dev branch." Only when it has been vetted is dev merged with the "prod branch." The resources running in the production environment will only ever work off code in the prod branch. New development will only ever take place on the dev branch.
+
+Branches can also be used to develop new features or to host complex refactors. If a particular patch requires ongoing work it can be developed in parallel while regular updates can continue to occur on the dev branch.
+
+In dispatch-predictions "dev" is the development branch and "master" the production branch. 
+
+#### Continuous integration & continuous delivery (CI/CD)
+
+When it is time to move updates into production a CI/CD pipeline automates the steps necessary to ensure quality patches to the production environment. In dispatch-predictions there are a set of Github actions that trigger resources in the production environment to pull in updates and run cursory checks. If the application fails to compile the new commits will be rolled back- preventing downtime and interruptions to the various services.
+
+The CI/CD pipeline will also install new dependencies and upgrade any packages according to changes in the requirements.txt file. The pipeline will also run any new required database migrations.
+
+## Final reflections & conclusions
+
+* ...
