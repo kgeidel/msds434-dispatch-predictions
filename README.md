@@ -33,7 +33,7 @@ Please visit my <img src="https://kstatic.googleusercontent.com/files/d57b24106c
 - [Step 8: Microservice deployment](#microservice-deployment)
 - [Step 9: Performance monitoring](#resource-and-performance-monitoring)
 - [Step 10: Production environment](#production-environment)
-- Final reflections
+- [Final reflections](#final-reflections--conclusions)
 
 ## The problem
 
