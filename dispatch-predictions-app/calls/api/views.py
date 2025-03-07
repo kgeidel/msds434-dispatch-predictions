@@ -1,3 +1,6 @@
+# Python native
+import subprocess
+
 # Django imports
 from django.conf import settings
 
@@ -80,6 +83,13 @@ class IncidentViewSet(viewsets.ModelViewSet):
                 results['error_msgs'].append('Incident: '+str(e))
                 results['error_calls'] += 1
         return Response(results)
+
+    @action(detail=False, methods=['get'])
+    def ci_init(self, request):
+        ''' Run CI/CD pipeline '''
+        cmd = ['pwd']
+        r = subprocess.run(cmd)
+        return Response({'return_code': str(r.returncode)})
 
     def destroy(self, request, pk=None):
         # Do not allow delete from the API
