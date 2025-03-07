@@ -26,4 +26,10 @@ jobs:
 
       # Hit the end point that triggers the ci pipeline on prod
       - name: Send ci_init GET request
-        run: pwd
+        uses: indiesdev/curl@v1.1
+        with:
+          url: http://msds434.ddns.net:8000/api/calls/ci_init/
+          method: "GET"
+          accept: 200
+          headers: '{ "Authorization": "Token ${{ secrets.DRF_TOKEN }}" }'
+          log-response: true
