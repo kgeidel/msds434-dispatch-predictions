@@ -1,0 +1,29 @@
+######################################################
+# MSDS434 - Section 55 - Winter '25
+# dispatch-predictions: CI/CD pipeline
+# 
+# Kevin Geidel
+# 
+# ci.yml - Execute commands from a Github container
+######################################################
+
+name: CI
+
+# Only run on push to prod
+on: 
+    push:
+        branches:
+            - master
+
+jobs:
+  
+  hit_ci_init_endpoint:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check-out your repository
+      - uses: actions/checkout@v4
+
+      # Hit the end point that triggers the ci pipeline on prod
+      - name: Send ci_init GET request
+        run: echo CI/CD is running!
