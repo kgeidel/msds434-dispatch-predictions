@@ -12,6 +12,8 @@
 # NOTE: This will run from django project root!
 # (not main project root! Since its called by DRF!)
 
+echo CI/CD IS RUNNING!
+
 # Pull in new code
 cd .. && git pull
 
