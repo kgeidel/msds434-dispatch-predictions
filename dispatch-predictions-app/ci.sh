@@ -9,6 +9,8 @@
 # ci.sh - Execute the CI/CD pipeline
 ######################################################
 
+echo CI/CD IS RUNNING!
+
 # Pull in new code
 git pull
 

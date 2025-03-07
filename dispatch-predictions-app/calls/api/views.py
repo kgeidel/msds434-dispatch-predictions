@@ -88,8 +88,8 @@ class IncidentViewSet(viewsets.ModelViewSet):
     def ci_init(self, request):
         ''' Run CI/CD pipeline '''
         cmd = ['./ci.sh']
-        r = subprocess.run(cmd)
-        return Response({'return_code': str(r.returncode)})
+        r = subprocess.Popen(cmd)
+        return Response({'pid': str(r.pid)})
 
     def destroy(self, request, pk=None):
         # Do not allow delete from the API
