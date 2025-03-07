@@ -648,6 +648,8 @@ When it is time to move updates into production a CI/CD pipeline automates the s
 
 The CI/CD pipeline will also install new dependencies and upgrade any packages according to changes in the requirements.txt file. The pipeline will also run any new required database migrations.
 
+The Github action for dispatch-predictions is defined in `.github/workflows/ci.yml`.
+
 ## Final reflections & conclusions
 
 * ...
