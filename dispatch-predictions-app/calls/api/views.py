@@ -87,7 +87,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def ci_init(self, request):
         ''' Run CI/CD pipeline '''
-        cmd = ['pwd']
+        cmd = ['./ci.sh']
         r = subprocess.run(cmd)
         return Response({'return_code': str(r.returncode)})
 
