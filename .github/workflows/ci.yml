@@ -26,4 +26,4 @@ jobs:
 
       # Hit the end point that triggers the ci pipeline on prod
       - name: Send ci_init GET request
-        run: echo CI/CD is running!
+        run: pwd
