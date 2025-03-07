@@ -18,4 +18,4 @@ git pull
 pip install -r ../requirements.txt
 
 # Run any new database migrations
-python manage.py migrate
+cd dispatch-predictions-app && python manage.py migrate
