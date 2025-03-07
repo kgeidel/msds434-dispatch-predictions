@@ -24,7 +24,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
     from pprint import pprint
 
     # Query the first page of incidents 
-    r = requests.get('http://[hostname:port]/api/calls/')
+    r = requests.get('http://msds434.ddns.net:8000/api/calls/')
 
     # display the json response
     pprint(json.loads(r.content))

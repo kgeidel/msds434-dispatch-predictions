@@ -9,11 +9,14 @@
 # ci.sh - Execute the CI/CD pipeline
 ######################################################
 
+# NOTE: This will run from django project root!
+# (not main project root! Since its called by DRF!)
+
 # Pull in new code
-git pull
+cd .. && git pull
 
 # Update package dependencies
-pip install -r ../requirements.txt
+pip install -r requirements.txt
 
 # Run any new database migrations
-python manage.py migrate
+cd dispatch-predictions && python manage.py migrate
