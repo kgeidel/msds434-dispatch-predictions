@@ -21,4 +21,4 @@ cd .. && git pull
 pip install -r requirements.txt
 
 # Run any new database migrations
-cd dispatch-predictions && python manage.py migrate
+cd dispatch-predictions-app && python manage.py migrate
