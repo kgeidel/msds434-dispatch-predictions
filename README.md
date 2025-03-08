@@ -22,6 +22,8 @@ March 16, 2025
 
 I am in section 55 (Winter '25.) This is my term project. <br>
 
+The final reflection paper can be found <img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/PDF_icon.svg" height="20" width="20"><a href="https://drive.google.com/file/d/1tsuD7azuyu8nWILJfropiofXHYQahV10/view?usp=sharing" target="_blank">here.</a>
+
 You can access the web app at <a href="http://msds434.ddns.net:8000" target="_blank">http://msds434.ddns.net:8000</a><br>
 If the page does not load I may have stopped the EC2 to limit costs. [Reach out to me](mailto:kevingeidel2024@u.northwestern.edu) and I can start it back up for you!
 
