@@ -63,7 +63,7 @@ Each view in the site contains a nav bar at the top of the page. The main option
 
 #### API access
 
-Obtain a web API token from the "Admin" panel- all requests (GET and POST) to the **dispatch-predictions** API require an authorization header of the form `Token <your-web-api-token>`. Any method for generating web requests will suffice. Here is an example using Python's `requests` package. 
+Obtain a web API token from the [Admin panel](http://msds434.ddns.net:8000/admin)- all requests (GET and POST) to the **dispatch-predictions** API require an authorization header of the form `Token <your-web-api-token>`. Any method for generating web requests will suffice. Here is an example using Python's `requests` package. 
 
 ```python
 import requests, json
