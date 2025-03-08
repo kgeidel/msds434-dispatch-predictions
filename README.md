@@ -29,6 +29,7 @@ If the page does not load I may have stopped the EC2 to limit costs. [Reach out 
 
 Please visit my <img src="https://kstatic.googleusercontent.com/files/d57b24106c34c7e50ef3d98423b94ddaf35ad2da73a9b9d4d12f52dbb9dd4c08c2957f6255ab8690d5ef0b32cff8287e09577d05e479d263e872160c4c9e8363" height="20" width="20">[Google Drive Folder](https://drive.google.com/drive/folders/1so_fM2HcdTYzCYSuwtdbxBeXtx1CPN8J?usp=sharing) for the project update videos.
 
+- [User documentation](#user-documentation)
 - [Step 1: Identify the problem](#the-problem)
 - [Step 2: Identify the data set](#the-data-set)
 - [Step 3: Construct a functional specification](#functional-specification)
@@ -39,6 +40,50 @@ Please visit my <img src="https://kstatic.googleusercontent.com/files/d57b24106c
 - [Step 8: Microservice deployment](#microservice-deployment)
 - [Step 9: Performance monitoring](#resource-and-performance-monitoring)
 - [Step 10: Production environment](#production-environment)
+
+## User documentation
+
+* [Navigation](#navigation)
+* [API access](#api-access) 
+
+#### Navigation
+
+Each view in the site contains a nav bar at the top of the page. The main options are as follows:
+
+| Item | Description |
+| ---- | :---------- |
+| A | The **calls** app contains lookups for incidents and call dispositions.  |
+| B | The **forecast** app contains the ML predictions in table and graphical forms. |
+| C | The **API browser** is a GUI tool for interacting with the REST API. |
+| D | The **admin** panel is for managing users, groups and api tokens. |
+| E | The **readme** is this document. |
+| F | The **monitor** tool is the Prometheus GUI. |
+
+![nav bar](docs/imgs/home_page.png)
+
+#### API access
+
+Obtain a web API token from the "Admin" panel- all requests (GET and POST) to the **dispatch-predictions** API require an authorization header of the form `Token <your-web-api-token>`. Any method for generating web requests will suffice. Here is an example using Python's `requests` package. 
+
+```python
+import requests, json
+from pprint import pprint
+ 
+api_token = 'YOUR API TOKEN'
+ 
+# Query the first page of incidents 
+r = requests.get(
+    'http://msds434.ddns.net:8000/api/calls/',
+    headers = {
+        "Authorization": f'Token {api_token}'
+    }
+)
+ 
+# display the json response
+pprint(json.loads(r.content))
+```
+
+The [API browser](http://msds434.ddns.net:8000/api/) is the best way to explore the options for the API.
 
 ## The problem
 
