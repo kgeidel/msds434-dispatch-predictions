@@ -22,10 +22,17 @@ class IncidentViewSet(viewsets.ModelViewSet):
     ```python
     import requests, json
     from pprint import pprint
+    
+    api_token = 'YOUR API TOKEN'
 
     # Query the first page of incidents 
-    r = requests.get('http://msds434.ddns.net:8000/api/calls/')
-
+    r = requests.get(
+        'http://msds434.ddns.net:8000/api/calls/',
+        headers = {
+            "Authorization": f'Token {api_token}'
+        }
+    )
+    
     # display the json response
     pprint(json.loads(r.content))
     ```
